@@ -4,7 +4,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -23,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         mTextInputLayout = findViewById(R.id.textUsernameLayout);
         mTextPasswordInput = findViewById(R.id.textPasswordInput);
@@ -93,6 +95,16 @@ public class LoginActivity extends AppCompatActivity {
         mTextPasswordInput.setEnabled(false);
         mButton.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            startActivity();
+        }, 2000);
+
+    }
+
+    private void startActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void showErrorDialog() {
