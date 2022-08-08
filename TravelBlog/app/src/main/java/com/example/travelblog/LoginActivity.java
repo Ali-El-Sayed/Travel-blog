@@ -22,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button mButton;
     private ProgressBar mProgressBar;
 
+    private BlogPreferences mBlogPreferences;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,13 @@ public class LoginActivity extends AppCompatActivity {
         mTextPasswordInput = findViewById(R.id.textPasswordInput);
         mButton = findViewById(R.id.loginButton);
         mProgressBar = findViewById(R.id.progressBar);
+
+        mBlogPreferences = new BlogPreferences(this);
+        if (mBlogPreferences.isLoggedIn()) {
+            startMainActivity();
+            finish();
+            return;
+        }
 
 
         // Java 8
@@ -91,18 +100,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void performLogin() {
+        mBlogPreferences.setLoggedIn(true);
+
         mTextInputLayout.setEnabled(false);
         mTextPasswordInput.setEnabled(false);
         mButton.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         Handler handler = new Handler();
         handler.postDelayed(() -> {
-            startActivity();
+            startMainActivity();
+            finish();
         }, 2000);
 
     }
 
-    private void startActivity() {
+    private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
