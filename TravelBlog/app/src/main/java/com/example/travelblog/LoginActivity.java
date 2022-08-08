@@ -9,40 +9,43 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputLayout textUsernameLayout;
-    private TextInputLayout textPasswordInput;
-    private Button loginButton;
+    private TextInputLayout mTextInputLayout;
+    private TextInputLayout mTextPasswordInput;
+    private Button mButton;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textUsernameLayout = findViewById(R.id.textUsernameLayout);
-        textPasswordInput = findViewById(R.id.textPasswordInput);
-        loginButton = findViewById(R.id.loginButton);
+        mTextInputLayout = findViewById(R.id.textUsernameLayout);
+        mTextPasswordInput = findViewById(R.id.textPasswordInput);
+        mButton = findViewById(R.id.loginButton);
+        mProgressBar = findViewById(R.id.progressBar);
 
 
         // Java 8
         // loginButton.setOnClickListener(v -> onLoginClicked());
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LoginActivity.this.onLoginClicked();
             }
         });
 
-        textUsernameLayout
+        mTextInputLayout
                 .getEditText()
-                .addTextChangedListener(createTextWatcher(textUsernameLayout));
-        textPasswordInput.
+                .addTextChangedListener(createTextWatcher(mTextInputLayout));
+        mTextPasswordInput.
                 getEditText()
-                .addTextChangedListener(createTextWatcher(textPasswordInput));
+                .addTextChangedListener(createTextWatcher(mTextPasswordInput));
 
     }
 
@@ -69,18 +72,27 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void onLoginClicked() {
-        String username = textUsernameLayout.getEditText().getText().toString();
-        String password = textPasswordInput.getEditText().getText().toString();
+        String username = mTextInputLayout.getEditText().getText().toString();
+        String password = mTextPasswordInput.getEditText().getText().toString();
 
         if (username.isEmpty())
-            textUsernameLayout.setError("Username must not be empty");
-        if (password.isEmpty())
-            textPasswordInput.setError("Password must not be empty");
+            mTextInputLayout.setError("Username must not be empty");
+        else if (password.isEmpty())
+            mTextPasswordInput.setError("Password must not be empty");
         else if (!username.equals("admin") && !password.equals("admin"))
             showErrorDialog();
+        else
+            performLogin();
 
 //        Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Clicked", Snackbar.LENGTH_LONG).show();
 //        Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    private void performLogin() {
+        mTextInputLayout.setEnabled(false);
+        mTextPasswordInput.setEnabled(false);
+        mButton.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     private void showErrorDialog() {
