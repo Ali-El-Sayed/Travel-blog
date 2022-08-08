@@ -35,11 +35,11 @@ public class LoginActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progressBar);
 
         mBlogPreferences = new BlogPreferences(this);
-        if (mBlogPreferences.isLoggedIn()) {
-            startMainActivity();
-            finish();
-            return;
-        }
+//        if (mBlogPreferences.isLoggedIn()) {
+//            startMainActivity();
+//            finish();
+//            return;
+//        }
 
 
         // Java 8
