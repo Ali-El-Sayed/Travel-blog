@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,11 +36,11 @@ public class LoginActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progressBar);
 
         mBlogPreferences = new BlogPreferences(this);
-//        if (mBlogPreferences.isLoggedIn()) {
-//            startMainActivity();
-//            finish();
-//            return;
-//        }
+        if (mBlogPreferences.isLoggedIn()) {
+            startMainActivity();
+            finish();
+            return;
+        }
 
 
         // Java 8
@@ -95,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
         else
             performLogin();
 
-//        Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Clicked", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Clicked", Snackbar.LENGTH_LONG).show();
 //        Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
     }
 
