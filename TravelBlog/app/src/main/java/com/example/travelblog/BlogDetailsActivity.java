@@ -13,13 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
 public class BlogDetailsActivity extends AppCompatActivity {
-
-    public static final String IMAGE_URL = "https://bitbucket.org/dmytrodanylyk/travel-blog-resources/raw/3436e16367c8ec2312a0644bebd2694d484eb047/images/sydney_image.jpg";
-    public static final String AVATAR_URL = "https://bitbucket.org/dmytrodanylyk/travel-blog-resources/raw/3436e16367c8ec2312a0644bebd2694d484eb047/avatars/avatar1.jpg";
     private TextView mTextTitle;
     private TextView mTextDate;
     private TextView mTextAuthor;
@@ -28,6 +26,9 @@ public class BlogDetailsActivity extends AppCompatActivity {
     private TextView mTextDescription;
     private RatingBar mRatingBar;
     private ProgressBar mProgressBar;
+    private ImageView mImageMain;
+    private ImageView mImageAvatar;
+    private ImageView mImageBack;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,10 +36,10 @@ public class BlogDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_blog_details);
 
         mProgressBar = findViewById(R.id.progressBar);
-        ImageView imageMain = findViewById(R.id.imageMain);
-        ImageView imageAvatar = findViewById(R.id.imageAvatar);
-        ImageView imageBack = findViewById(R.id.imageBack);
-        imageBack.setOnClickListener(v -> finish());
+        mImageMain = findViewById(R.id.imageMain);
+        mImageAvatar = findViewById(R.id.imageAvatar);
+        mImageBack = findViewById(R.id.imageBack);
+        mImageBack.setOnClickListener(v -> finish());
         mTextTitle = findViewById(R.id.textTitle);
         mTextDate = findViewById(R.id.textDate);
         mTextAuthor = findViewById(R.id.textAuthor);
@@ -47,38 +48,52 @@ public class BlogDetailsActivity extends AppCompatActivity {
         mTextDescription = findViewById(R.id.textDescription);
         mRatingBar = findViewById(R.id.ratingBar);
 
+        loadData();
+    }
+
+    private void loadData() {
         BlogHttpClient.INSTANCE.loadBlogArticles(new BlogArticlesCallback() {
             @Override
             public void onSuccess(List<Blog> blogList) {
                 runOnUiThread(() -> showData(blogList.get(0)));
             }
 
-            private void showData(Blog blog) {
-                mProgressBar.setVisibility(View.GONE);
-                mTextTitle.setText(blog.getTitle());
-                mTextDate.setText(blog.getDate());
-                mTextAuthor.setText(blog.getAuthor().getName());
-                mTextRating.setText(String.valueOf(blog.getRating()));
-                mTextViews.setText(String.format("(%d views)", blog.getViews()));
-                mTextDescription.setText(blog.getDescription());
-                mRatingBar.setRating(blog.getRating());
-
-                Glide.with(BlogDetailsActivity.this)
-                        .load(IMAGE_URL)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .into(imageMain);
-                Glide.with(BlogDetailsActivity.this)
-                        .load(AVATAR_URL)
-                        .transform(new CircleCrop())
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .into(imageAvatar);
-            }
-
             @Override
             public void onError() {
-
+                runOnUiThread(() -> showErrorSnackbar());
             }
         });
+    }
 
+    private void showErrorSnackbar() {
+        View rootView = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(rootView, "Error during loading blog articles", Snackbar.LENGTH_INDEFINITE);
+        snackbar.setActionTextColor(getResources().getColor(R.color.orange500));
+        snackbar.setAction("Retry", v -> {
+            loadData();
+            snackbar.dismiss();
+        });
+        snackbar.show();
+    }
+
+    private void showData(Blog blog) {
+        mProgressBar.setVisibility(View.GONE);
+        mTextTitle.setText(blog.getTitle());
+        mTextDate.setText(blog.getDate());
+        mTextAuthor.setText(blog.getAuthor().getName());
+        mTextRating.setText(String.valueOf(blog.getRating()));
+        mTextViews.setText(String.format("(%d views)", blog.getViews()));
+        mTextDescription.setText(blog.getDescription());
+        mRatingBar.setRating(blog.getRating());
+
+        Glide.with(this)
+                .load(blog.getImage())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(mImageMain);
+        Glide.with(this)
+                .load(blog.getAuthor().getAvatar())
+                .transform(new CircleCrop())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(mImageAvatar);
     }
 }
