@@ -12,10 +12,19 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
+import java.util.List;
+
 public class BlogDetailsActivity extends AppCompatActivity {
 
     public static final String IMAGE_URL = "https://bitbucket.org/dmytrodanylyk/travel-blog-resources/raw/3436e16367c8ec2312a0644bebd2694d484eb047/images/sydney_image.jpg";
     public static final String AVATAR_URL = "https://bitbucket.org/dmytrodanylyk/travel-blog-resources/raw/3436e16367c8ec2312a0644bebd2694d484eb047/avatars/avatar1.jpg";
+    private TextView mTextTitle;
+    private TextView mTextDate;
+    private TextView mTextAuthor;
+    private TextView mTextRating;
+    private TextView mTextViews;
+    private TextView mTextDescription;
+    private RatingBar mRatingBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,40 +32,48 @@ public class BlogDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_blog_details);
 
         ImageView imageMain = findViewById(R.id.imageMain);
-        Glide.with(this)
-                .load(IMAGE_URL)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(imageMain);
-
         ImageView imageAvatar = findViewById(R.id.imageAvatar);
-        Glide.with(this)
-                .load(AVATAR_URL)
-                .transform(new CircleCrop())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(imageAvatar);
-
         ImageView imageBack = findViewById(R.id.imageBack);
         imageBack.setOnClickListener(v -> finish());
+        mTextTitle = findViewById(R.id.textTitle);
+        mTextDate = findViewById(R.id.textDate);
+        mTextAuthor = findViewById(R.id.textAuthor);
+        mTextRating = findViewById(R.id.textRating);
+        mTextViews = findViewById(R.id.textViews);
+        mTextDescription = findViewById(R.id.textDescription);
+        mRatingBar = findViewById(R.id.ratingBar);
 
-        TextView textTitle = findViewById(R.id.textTitle);
-        textTitle.setText("G'day from Sydney");
+        BlogHttpClient.INSTANCE.loadBlogArticles(new BlogArticlesCallback() {
+            @Override
+            public void onSuccess(List<Blog> blogList) {
+                runOnUiThread(() -> showData(blogList.get(0)));
+            }
 
-        TextView textDate = findViewById(R.id.textDate);
-        textDate.setText("August 2, 2019");
+            private void showData(Blog blog) {
+                mTextTitle.setText(blog.getTitle());
+                mTextDate.setText(blog.getDate());
+                mTextAuthor.setText(blog.getAuthor().getName());
+                mTextRating.setText(String.valueOf(blog.getRating()));
+                mTextViews.setText(String.format("(%d views)", blog.getViews()));
+                mTextDescription.setText(blog.getDescription());
+                mRatingBar.setRating(blog.getRating());
 
-        TextView textAuthor = findViewById(R.id.textAuthor);
-        textAuthor.setText("Grayson Wells");
+                Glide.with(BlogDetailsActivity.this)
+                        .load(IMAGE_URL)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .into(imageMain);
+                Glide.with(BlogDetailsActivity.this)
+                        .load(AVATAR_URL)
+                        .transform(new CircleCrop())
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .into(imageAvatar);
+            }
 
-        TextView textRating = findViewById(R.id.textRating);
-        textRating.setText("4.4");
+            @Override
+            public void onError() {
 
-        TextView textViews = findViewById(R.id.textViews);
-        textViews.setText("(2687 views)");
+            }
+        });
 
-        TextView textDescription = findViewById(R.id.textDescription);
-        textDescription.setText("Australia is one of the most popular travel destinations in the world.");
-
-        RatingBar ratingBar = findViewById(R.id.ratingBar);
-        ratingBar.setRating(4.4f);
     }
 }
