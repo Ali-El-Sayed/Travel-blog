@@ -1,5 +1,7 @@
 package com.example.travelblog;
 
+import java.util.Objects;
+
 public class Blog {
     private String id;
     private Author author;
@@ -40,6 +42,32 @@ public class Blog {
 
     public float getRating() {
         return rating;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Blog blog = (Blog) o;
+
+        return views == blog.getViews() &&
+                Float.compare(blog.getRating(), rating) == 0 &&
+                Objects.equals(id, blog.id) &&
+                Objects.equals(author, blog.author) &&
+                Objects.equals(title, blog.title) &&
+                Objects.equals(date, blog.date) &&
+                Objects.equals(image, blog.image) &&
+                Objects.equals(description, blog.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, author, title, date, image, description, views, rating);
+    }
+
+    public String getImageURL() {
+        return BlogHttpClient.BASE_URL + BlogHttpClient.PATH + getImage();
     }
 
 
