@@ -1,32 +1,51 @@
-package com.example.travelblog;
+package com.ui.screen;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.widget.TextView;
 
-import com.example.travelblog.com.example.Adapter.MainAdapter;
+import com.data.client.BlogArticlesCallback;
+import com.data.client.BlogHttpClient;
+import com.data.models.Blog;
+import com.example.travelblog.R;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.ui.adapter.IOnItemClickListener;
+import com.ui.adapter.MainAdapter;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IOnItemClickListener {
+
+    private static final int SORT_TITLE = 0; // 1
+    private static final int SORT_DATE = 1; // 1
+
+    private int currentSort = SORT_DATE; // 2
 
     private MainAdapter mAdapter;
     private SwipeRefreshLayout refreshLayout;
+    private MaterialToolbar toolBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAdapter = new MainAdapter();
+        toolBar = findViewById(R.id.appBar);
+        mAdapter = new MainAdapter(this);
+
+        toolBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.sort) {
+                onSortClicked(); // implemented later in this lesson
+            }
+            return false;
+        });
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -34,8 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
         refreshLayout = findViewById(R.id.refresh);
         refreshLayout.setOnRefreshListener(this::loadData);
-
         loadData();
+
+
     }
 
     private void loadData() {
@@ -45,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(List<Blog> blogList) {
                 runOnUiThread(() -> {
                     refreshLayout.setRefreshing(false);
-                    mAdapter.submitList(blogList);
+                    mAdapter.setList(blogList);
                 });
             }
 
@@ -70,4 +90,28 @@ public class MainActivity extends AppCompatActivity {
         snackbar.show();
     }
 
+    @Override
+    public void onItemClicked(Blog blog) {
+        BlogDetailsActivity.startBlogDetailsActivity(this, blog);
+    }
+
+
+    private void onSortClicked() {
+        String[] items = {"Title", "Date"};
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Sort Order")
+                .setSingleChoiceItems(items, currentSort, (dialog, which) -> {
+                    dialog.dismiss();
+                    currentSort = which;
+                    sortData();
+                }).show();
+    }
+
+    private void sortData() {
+        if (currentSort == SORT_DATE)
+            mAdapter.sortByDate();
+        else if (currentSort == SORT_TITLE)
+            mAdapter.sortByTitle();
+    }
 }

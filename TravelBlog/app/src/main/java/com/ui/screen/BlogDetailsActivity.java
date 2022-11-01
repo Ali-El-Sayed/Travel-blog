@@ -1,6 +1,9 @@
-package com.example.travelblog;
+package com.ui.screen;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,15 +13,21 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.data.client.BlogArticlesCallback;
+import com.data.client.BlogHttpClient;
+import com.data.models.Blog;
+import com.example.travelblog.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
 public class BlogDetailsActivity extends AppCompatActivity {
+    private static final String EXTRAS_BLOG = "BLOG_EXTRAS";
     private TextView mTextTitle;
     private TextView mTextDate;
     private TextView mTextAuthor;
@@ -49,7 +58,10 @@ public class BlogDetailsActivity extends AppCompatActivity {
         mTextDescription = findViewById(R.id.textDescription);
         mRatingBar = findViewById(R.id.ratingBar);
 
-        loadData();
+//        loadData();
+        showData(getIntent()
+                .getExtras()
+                .getParcelable(EXTRAS_BLOG));
     }
 
     private void loadData() {
@@ -84,17 +96,24 @@ public class BlogDetailsActivity extends AppCompatActivity {
         mTextAuthor.setText(blog.getAuthor().getName());
         mTextRating.setText(String.valueOf(blog.getRating()));
         mTextViews.setText(String.format("(%d views)", blog.getViews()));
-        mTextDescription.setText(Html.fromHtml(blog.getDescription()));
+        mTextDescription.setText(HtmlCompat.fromHtml(blog.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT));
         mRatingBar.setRating(blog.getRating());
 
         Glide.with(this)
-                .load(blog.getImage())
+                .load(BlogHttpClient.BASE_URL + BlogHttpClient.PATH + blog.getImage())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(mImageMain);
         Glide.with(this)
-                .load(blog.getAuthor().getAvatar())
+                .load(BlogHttpClient.BASE_URL + BlogHttpClient.PATH + blog.getAuthor().getAvatar())
                 .transform(new CircleCrop())
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(mImageAvatar);
     }
+
+    public static void startBlogDetailsActivity(Activity activity, Blog blog) {
+        Intent intent = new Intent(activity, BlogDetailsActivity.class);
+        intent.putExtra(EXTRAS_BLOG, blog);
+        activity.startActivity(intent);
+    }
 }
+

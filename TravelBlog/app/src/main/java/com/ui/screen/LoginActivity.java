@@ -1,4 +1,4 @@
-package com.example.travelblog;
+package com.ui.screen;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.peferences.BlogPreferences;
+import com.example.travelblog.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -22,7 +24,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout mTextPasswordInput;
     private Button mButton;
     private ProgressBar mProgressBar;
-
     private BlogPreferences mBlogPreferences;
 
     @Override
@@ -42,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-
         // Java 8
         // loginButton.setOnClickListener(v -> onLoginClicked());
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -52,11 +52,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mTextInputLayout
-                .getEditText()
+        mTextInputLayout.getEditText()
                 .addTextChangedListener(createTextWatcher(mTextInputLayout));
-        mTextPasswordInput.
-                getEditText()
+        mTextPasswordInput.getEditText()
                 .addTextChangedListener(createTextWatcher(mTextPasswordInput));
 
     }
@@ -102,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void performLogin() {
         mBlogPreferences.setLoggedIn(true);
-
         mTextInputLayout.setEnabled(false);
         mTextPasswordInput.setEnabled(false);
         mButton.setVisibility(View.INVISIBLE);
@@ -122,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showErrorDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Login Faild")
+                .setTitle("Login Failed")
                 .setMessage("Username or password is not correct. Please try again.")
                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                 .show();

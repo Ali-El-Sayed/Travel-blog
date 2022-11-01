@@ -1,7 +1,8 @@
-package com.example.travelblog;
+package com.data.client;
 
 import android.util.Log;
 
+import com.data.models.BlogData;
 import com.google.gson.Gson;
 
 import java.io.IOException;

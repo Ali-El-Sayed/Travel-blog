@@ -1,4 +1,6 @@
-package com.example.travelblog;
+package com.data.client;
+
+import com.data.models.Blog;
 
 import java.util.List;
 

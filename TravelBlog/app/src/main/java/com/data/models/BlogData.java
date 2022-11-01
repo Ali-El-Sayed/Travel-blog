@@ -1,4 +1,4 @@
-package com.example.travelblog;
+package com.data.models;
 
 import java.util.ArrayList;
 import java.util.List;

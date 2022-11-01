@@ -17,17 +17,16 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.ui.screen.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".BlogDetailsActivity"
+            android:name="com.ui.screen.BlogDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name="com.ui.screen.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

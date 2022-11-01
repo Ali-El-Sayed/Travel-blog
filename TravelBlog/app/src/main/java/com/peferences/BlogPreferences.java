@@ -1,4 +1,4 @@
-package com.example.travelblog;
+package com.peferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,7 +7,7 @@ public class BlogPreferences {
     private static String KEY_LOGIN_STATE = "key_login_state";
     private SharedPreferences mSharedPreferences;
 
-    BlogPreferences(Context context) {
+    public BlogPreferences(Context context) {
         mSharedPreferences =
                 context.getSharedPreferences("travel-blog", Context.MODE_PRIVATE);
     }
